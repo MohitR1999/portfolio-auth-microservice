@@ -1,0 +1,7 @@
+const SUCCESSFUL_USER_REGISTRATION = 'User registered successfully';
+const SUCCESSFUL_CREATION_STATUS = 201;
+
+module.exports = {
+    SUCCESSFUL_USER_REGISTRATION,
+    SUCCESSFUL_CREATION_STATUS
+}
