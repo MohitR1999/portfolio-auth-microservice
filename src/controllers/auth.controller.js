@@ -14,60 +14,60 @@ const {
 const { EMAIL_REGEX, GENERAL_TEXT_REGEX } = require('../constants/Regex');
 const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS } = require('../constants/Success');
 
-/**
- * validates a username
- * @param {String} username 
- */
-const checkUsernameValid = (username) => {
-    if(!username) {
-        throw new Error(EMPTY_USERNAME);
+class Validator {
+    isUsernameValid = (username) => {
+        if (!username) {
+            return { success: false, error: EMPTY_USERNAME };
+        } else if (!GENERAL_TEXT_REGEX.test(username)) {
+            return { success: false, error: INVALID_USERNAME };
+        } else {
+            return { success: true, error: "" };
+        }
     }
-    else if (username && !GENERAL_TEXT_REGEX.test(username)) {
-        throw new Error(INVALID_USERNAME);
-    } 
-}
 
-const checkEmailValid = (email) => {
-    if (!email) {
-        throw new Error(EMPTY_EMAIL);
+    isEmailValid = (email) => {
+        if (!email) {
+            return { success: false, error: EMPTY_EMAIL };
+        } else if (!EMAIL_REGEX.test(email)) {
+            return { success: false, error: INVALID_EMAIL };
+        } else {
+            return { success: true, error: "" };
+        }
+    }
+
+    isPasswordValid = (value) => {
+        if (!value) {
+            return { success: false, error: EMPTY_PASSWORD };
+        } else {
+            return { success: true, error: "" };
+        }
     }
     
-    else if (email && !EMAIL_REGEX.test(email)) {
-        throw new Error(INVALID_EMAIL);
-    } 
-}
-
-const checkPasswordValid = (value) => {
-    if (!value) {
-        throw new Error(EMPTY_PASSWORD);
-    }
-}
-
-const checkFirstNameValid = (value) => {
-    if (value && !GENERAL_TEXT_REGEX.test(value)) {
-        throw new Error(INVALID_FIRST_NAME);
-    }
-}
-
-const checkLastNameValid = (value) => {
-    if (value && !GENERAL_TEXT_REGEX.test(value)) {
-        throw new Error(INVALID_LAST_NAME);
-    }
 }
 
 const register = async (req, res) => {
     const { username, password, email, first_name, last_name } = req.body;
+    const validator = new Validator();
+    let status = null;
     try {
         // check if username is valid
-        checkUsernameValid(username);
+        status = validator.isUsernameValid(username);
+        if (!status.success) {
+            throw new Error(status.error);
+        }
+        
         // check if email is valid
-        checkEmailValid(email);
+        status = validator.isEmailValid(email);
+        if (!status.success) {
+            throw new Error(status.error);
+        }
+
         // check if password is valid
-        checkPasswordValid(password);
-        // check if given first name is valid
-        checkFirstNameValid(first_name);
-        // check if given last name is valid
-        checkLastNameValid(last_name);
+        status = validator.isPasswordValid(password);
+        if (!status.success) {
+            throw new Error(status.error);
+        }
+
         // if everything is good, create user and send response
         const user = new User({
             username,
