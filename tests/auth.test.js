@@ -38,5 +38,50 @@ describe('User registration', () => {
         expect(res.body).toHaveProperty("userId");
     });
 
+    it('Should throw validation error when username is missing', async () => {
+        const res = await request(app).post('/api/auth/register').send(
+            {
+                "first_name": "John", 
+                "last_name": "Doe", 
+                "email": "john@example.com", 
+                "password": "123456"
+            }
+        );
+
+        expect(res.statusCode).toBe(Errors.UNSUCCESSFUL_ERROR_STATUS);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toBe(Errors.EMPTY_USERNAME);
+    });
+
+    it('Should throw validation error when email is missing', async () => {
+        const res = await request(app).post('/api/auth/register').send(
+            {
+                "username": "john",
+                "first_name": "John", 
+                "last_name": "Doe", 
+                "password": "123456"
+            }
+        );
+
+        expect(res.statusCode).toBe(Errors.UNSUCCESSFUL_ERROR_STATUS);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toBe(Errors.EMPTY_EMAIL);
+    });
+
+    it('Should throw validation error when password is missing', async () => {
+        const res = await request(app).post('/api/auth/register').send(
+            {
+                "username": "john",
+                "first_name": "John", 
+                "last_name": "Doe", 
+                "email": "john@example.com", 
+            }
+        );
+
+        expect(res.statusCode).toBe(Errors.UNSUCCESSFUL_ERROR_STATUS);
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.error).toBe(Errors.EMPTY_PASSWORD);
+    });
+
 
 })
