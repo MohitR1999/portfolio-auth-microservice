@@ -9,10 +9,14 @@ const {
     EMPTY_PASSWORD,
     INVALID_FIRST_NAME,
     INVALID_LAST_NAME,
-    UNSUCCESSFUL_ERROR_STATUS
+    UNSUCCESSFUL_ERROR_STATUS,
+    USER_NOT_FOUND,
+    NOT_FOUND_ERROR_STATUS,
+    INCORRECT_PASSWORD,
+    UNAUTHORIZED_ERROR_STATUS
 } = require('../constants/Errors');
 const { EMAIL_REGEX, GENERAL_TEXT_REGEX } = require('../constants/Regex');
-const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS } = require('../constants/Success');
+const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STATUS } = require('../constants/Success');
 
 class Validator {
     isUsernameValid = (username) => {
@@ -91,4 +95,31 @@ const register = async (req, res) => {
     }
 }
 
-module.exports = { register }
+const login = async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const user = await User.findOne({ username });
+        if (!user) {
+            const err = new Error(USER_NOT_FOUND)
+            err.status = NOT_FOUND_ERROR_STATUS;
+            throw err;
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            const err = new Error(INCORRECT_PASSWORD);
+            err.status = UNAUTHORIZED_ERROR_STATUS;
+            throw err;
+        }
+
+        const token = jwt.sign({id : user._id}, process.env.JWT_SECRET);
+        res.status(SUCCESSFUL_STATUS).json({ token });
+    } catch (error) {
+        res.status(error.status ? error.status : 500)
+        .json({
+            error : error.message
+        });
+    }
+}
+
+module.exports = { register, login }
