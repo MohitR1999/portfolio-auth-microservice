@@ -98,6 +98,18 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { username, password } = req.body;
     try {
+        if (!username) {
+            const err = new Error(EMPTY_USERNAME);
+            err.status = UNSUCCESSFUL_ERROR_STATUS;
+            throw err;
+        }
+
+        if (!password) {
+            const err = new Error(EMPTY_PASSWORD);
+            err.status = UNSUCCESSFUL_ERROR_STATUS;
+            throw err;
+        }
+        
         const user = await User.findOne({ username });
         if (!user) {
             const err = new Error(USER_NOT_FOUND)
