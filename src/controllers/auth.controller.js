@@ -16,7 +16,7 @@ const {
     UNAUTHORIZED_ERROR_STATUS
 } = require('../constants/Errors');
 const { EMAIL_REGEX, GENERAL_TEXT_REGEX } = require('../constants/Regex');
-const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STATUS } = require('../constants/Success');
+const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STATUS, SUCCESSFUL_LOGOUT } = require('../constants/Success');
 
 class Validator {
     isUsernameValid = (username) => {
@@ -134,4 +134,10 @@ const login = async (req, res) => {
     }
 }
 
-module.exports = { register, login }
+const logout = async (req, res) => {
+    res.status(SUCCESSFUL_STATUS).json({
+        message : SUCCESSFUL_LOGOUT
+    });
+}
+
+module.exports = { register, login, logout }
