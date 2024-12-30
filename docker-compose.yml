@@ -20,6 +20,7 @@ services:
 
   mongo:
     image: mongo
+    hostname: mongo-auth
     restart: always
     env_file: ".env"
     ports:
