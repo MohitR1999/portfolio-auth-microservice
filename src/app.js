@@ -12,7 +12,7 @@ app.use(express.json());
 // set the routes
 app.use('/api/auth', authRoutes);
 app.get("/", (req, res) => {
-    res.send("hello world!!!!");
+    res.send("Auth service up and running!");
 })
 
 // connect to database
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV != 'test') {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`This Server now running on port : ${PORT}`);
+    console.log(`Auth service now running on port : ${PORT}`);
 })
 
 // export everything

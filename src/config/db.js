@@ -7,9 +7,9 @@ const { Admin } = mongoose;
 const connectDB = async (url) => {
     try {
         await mongoose.connect(url);
-        console.log('MongoDB connected successfully!!!');
+        console.log('Auth service connected to MongoDB successfully!');
     } catch (err) {
-        console.log('MongoDB connection error', err.message);
+        console.log('MongoDB connection error in auth service:', err.message);
         process.exit(1);
     }
 }
