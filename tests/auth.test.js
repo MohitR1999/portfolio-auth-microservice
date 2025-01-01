@@ -224,3 +224,75 @@ describe('User logout', () => {
 
 })
 
+describe('JWT verification', () => {
+    const testUser = {
+        "username": "john",
+        "first_name": "John", 
+        "last_name": "Doe", 
+        "email": "john@example.com", 
+        "password": "123456"
+    }
+
+    let token = "";
+
+    beforeAll(async () => {
+        await connectDB(globalThis.__MONGO_URI__);
+    })
+
+    afterAll(async () => {
+        await mongoose.connection.dropDatabase();
+        await mongoose.connection.close();
+    })
+    
+    it('Should register a user with given data', async () => {
+        const res = await request(app).post('/api/auth/register').send(testUser);
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body.message).toBe(Success.SUCCESSFUL_USER_REGISTRATION);
+        expect(res.body).toHaveProperty("userId");
+    });
+
+    it('Should login the user when correct credentials are given', async () => {
+        const res = await request(app).post('/api/auth/login').send(
+            {
+                username : testUser.username,
+                password : testUser.password
+            }
+        );
+
+        expect(res.statusCode).toBe(Success.SUCCESSFUL_STATUS);
+        expect(res.body).toHaveProperty('token');
+        token = res.body.token;
+    });
+
+    it('Should verify the JWT successfully if it is correct', async () => {
+        const res = await request(app).get('/api/auth/verify').set({
+            'Authorization' : `Bearer ${token}`
+        }).send();
+        expect(res.statusCode).toBe(Success.SUCCESSFUL_STATUS);
+        expect(res.body).toHaveProperty('valid');
+        expect(res.body.valid).toBe(true);
+    });
+
+    it('Should give error if JWT token is not valid', async () => {
+        const res = await request(app).get('/api/auth/verify').set({
+            'Authorization' : `Bearer invalid_token`
+        }).send();
+        expect(res.statusCode).toBe(Errors.UNAUTHORIZED_ERROR_STATUS);
+        expect(res.body).toHaveProperty('valid');
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.valid).toBe(false);
+        expect(res.body.error).toBe(Errors.INVALID_TOKEN_ERROR);
+    });
+
+    it('Should give error if JWT token is not present', async () => {
+        const res = await request(app).get('/api/auth/verify').send();
+        expect(res.statusCode).toBe(Errors.UNAUTHORIZED_ERROR_STATUS);
+        expect(res.body).toHaveProperty('valid');
+        expect(res.body).toHaveProperty('error');
+        expect(res.body.valid).toBe(false);
+        expect(res.body.error).toBe(Errors.MISSING_TOKEN_ERROR);
+    });
+
+})
+
