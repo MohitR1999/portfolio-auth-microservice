@@ -144,6 +144,11 @@ const logout = async (req, res) => {
 }
 
 const verify = async (req, res) => {
+    if (req.headers['x-original-method'] === 'GET') {
+        return res.status(SUCCESSFUL_STATUS).json({
+            valid : true
+        })
+    }
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(" ")[1];
     try {
