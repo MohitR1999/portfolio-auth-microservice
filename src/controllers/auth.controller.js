@@ -13,10 +13,13 @@ const {
     USER_NOT_FOUND,
     NOT_FOUND_ERROR_STATUS,
     INCORRECT_PASSWORD,
-    UNAUTHORIZED_ERROR_STATUS
+    UNAUTHORIZED_ERROR_STATUS,
+    INVALID_TOKEN_ERROR,
+    MISSING_TOKEN_ERROR
 } = require('../constants/Errors');
 const { EMAIL_REGEX, GENERAL_TEXT_REGEX } = require('../constants/Regex');
 const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STATUS, SUCCESSFUL_LOGOUT } = require('../constants/Success');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 class Validator {
     isUsernameValid = (username) => {
@@ -140,4 +143,30 @@ const logout = async (req, res) => {
     });
 }
 
-module.exports = { register, login, logout }
+const verify = async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
+    try {
+        if (!token) {
+            throw new UnauthorizedError(MISSING_TOKEN_ERROR);
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.status(SUCCESSFUL_STATUS).json({
+            valid : true
+        })
+    } catch (err) {
+        if (err instanceof jwt.JsonWebTokenError) {
+            res.status(UNAUTHORIZED_ERROR_STATUS).json({
+                valid : false,
+                error : INVALID_TOKEN_ERROR
+            })
+        } else {
+            res.status(err.status).json({
+                valid : false,
+                error : err.message
+            })
+        }
+    }
+}
+
+module.exports = { register, login, logout, verify }

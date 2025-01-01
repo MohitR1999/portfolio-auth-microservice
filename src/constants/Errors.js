@@ -7,6 +7,8 @@ const INVALID_FIRST_NAME = 'Please provide a valid first name. It must not conta
 const INVALID_LAST_NAME = 'Please provide a valid last name. It must not contain any special characters';
 const USER_NOT_FOUND = `User doesn't exist`;
 const INCORRECT_PASSWORD = 'Username or password is incorrect';
+const MISSING_TOKEN_ERROR = "No authentication token was found. Please re-login";
+const INVALID_TOKEN_ERROR = "Provided authentication token was invalid. Please re-login";
 const UNSUCCESSFUL_ERROR_STATUS = 400;
 const NOT_FOUND_ERROR_STATUS = 404
 const UNAUTHORIZED_ERROR_STATUS = 401;
@@ -23,5 +25,7 @@ module.exports = {
     USER_NOT_FOUND,
     NOT_FOUND_ERROR_STATUS,
     INCORRECT_PASSWORD,
-    UNAUTHORIZED_ERROR_STATUS
+    UNAUTHORIZED_ERROR_STATUS,
+    MISSING_TOKEN_ERROR,
+    INVALID_TOKEN_ERROR
 }
