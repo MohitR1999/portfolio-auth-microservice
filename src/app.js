@@ -3,11 +3,13 @@ require('dotenv').config();
 // import routes
 const express = require('express');
 const connectDB = require('./config/db');
+const morgan = require('morgan');
 const authRoutes = require('./routes/auth');
 
 // create the express app
 const app = express();
 app.use(express.json());
+app.use(morgan('dev'));
 
 // set the routes
 app.use('/api/auth', authRoutes);
