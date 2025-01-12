@@ -15,11 +15,15 @@ const {
     INCORRECT_PASSWORD,
     UNAUTHORIZED_ERROR_STATUS,
     INVALID_TOKEN_ERROR,
-    MISSING_TOKEN_ERROR
+    MISSING_TOKEN_ERROR,
+    INTERNAL_SERVER_ERROR,
+    INTERNAL_ERROR_STATUS
 } = require('../constants/Errors');
 const { EMAIL_REGEX, GENERAL_TEXT_REGEX } = require('../constants/Regex');
-const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STATUS, SUCCESSFUL_LOGOUT } = require('../constants/Success');
+const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STATUS, SUCCESSFUL_LOGOUT, SUCCESSFUL_USER_DELETION } = require('../constants/Success');
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const { getToken, getDecodedValue } = require('../utils/Verifier');
+const InternalError = require('../errors/InternalError');
 
 class Validator {
     isUsernameValid = (username) => {
@@ -143,22 +147,50 @@ const logout = async (req, res) => {
     });
 }
 
+const deleteUser = async (req, res) => {
+    try {
+        const token = getToken(req);
+        const value = getDecodedValue(token);
+        const result = await User.findByIdAndDelete(value.id);
+        if (result) {
+            res.status(SUCCESSFUL_STATUS).json({
+                message : SUCCESSFUL_USER_DELETION
+            });
+        } else {
+            throw new InternalError(INTERNAL_SERVER_ERROR)
+        }
+    } catch (err) {
+        if (!err.status) {
+            console.log(err);
+            return res.status(INTERNAL_ERROR_STATUS).json({
+                error : `${INTERNAL_SERVER_ERROR} ${err.message}`
+            });
+        } else {
+            return res.status(err.status).json({
+                error : err.message
+            });
+        }
+    }
+}
+
 const verify = async (req, res) => {
     if (req.headers['x-original-method'] === 'GET') {
         return res.status(SUCCESSFUL_STATUS).json({
             valid : true
         })
     }
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.split(" ")[1];
     try {
-        if (!token) {
-            throw new UnauthorizedError(MISSING_TOKEN_ERROR);
+        const token = getToken(req);
+        const value = getDecodedValue(token);
+        // check in database whether the user exists or not
+        const user = await User.findOne({ _id : value.id });
+        if (user) {
+            res.status(SUCCESSFUL_STATUS).json({
+                valid : true
+            })
+        } else {
+            throw new UnauthorizedError(USER_NOT_FOUND);
         }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.status(SUCCESSFUL_STATUS).json({
-            valid : true
-        })
     } catch (err) {
         if (err instanceof jwt.JsonWebTokenError) {
             res.status(UNAUTHORIZED_ERROR_STATUS).json({
@@ -174,4 +206,4 @@ const verify = async (req, res) => {
     }
 }
 
-module.exports = { register, login, logout, verify }
+module.exports = { register, login, logout, verify, deleteUser }
