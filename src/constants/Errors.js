@@ -8,10 +8,14 @@ const INVALID_LAST_NAME = 'Please provide a valid last name. It must not contain
 const USER_NOT_FOUND = `User doesn't exist`;
 const INCORRECT_PASSWORD = 'Username or password is incorrect';
 const MISSING_TOKEN_ERROR = "No authentication token was found. Please re-login";
+const MISSING_AUTH_HEADER_ERROR = "No authentication header was found. Bad request";
 const INVALID_TOKEN_ERROR = "Provided authentication token was invalid. Please re-login";
+const INTERNAL_SERVER_ERROR = "Internal server error";
 const UNSUCCESSFUL_ERROR_STATUS = 400;
+const BAD_REQUEST_STATUS = 400;
 const NOT_FOUND_ERROR_STATUS = 404
 const UNAUTHORIZED_ERROR_STATUS = 401;
+const INTERNAL_ERROR_STATUS = 500;
 
 module.exports = {
     EMPTY_USERNAME,
@@ -27,5 +31,9 @@ module.exports = {
     INCORRECT_PASSWORD,
     UNAUTHORIZED_ERROR_STATUS,
     MISSING_TOKEN_ERROR,
-    INVALID_TOKEN_ERROR
+    INVALID_TOKEN_ERROR,
+    MISSING_AUTH_HEADER_ERROR,
+    BAD_REQUEST_STATUS,
+    INTERNAL_ERROR_STATUS,
+    INTERNAL_SERVER_ERROR
 }
