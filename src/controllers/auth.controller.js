@@ -151,13 +151,14 @@ const deleteUser = async (req, res) => {
     try {
         const token = getToken(req);
         const value = getDecodedValue(token);
-        const result = await User.findByIdAndDelete(value.id);
+        const result = await User.findById(value.id);
         if (result) {
+            await User.deleteOne({ _id : value.id });
             res.status(SUCCESSFUL_STATUS).json({
                 message : SUCCESSFUL_USER_DELETION
             });
         } else {
-            throw new InternalError(INTERNAL_SERVER_ERROR)
+            throw new UnauthorizedError(USER_NOT_FOUND);
         }
     } catch (err) {
         if (!err.status) {
