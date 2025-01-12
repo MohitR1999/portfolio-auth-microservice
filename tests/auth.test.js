@@ -401,7 +401,7 @@ describe('User deletion and JWT verification', () => {
         const res = await request(app).get('/api/auth/verify').set({
             'Authorization' : `Bearer ${token}`
         }).send();
-        expect(res.statusCode).toBe(Errors.UNAUTHORIZED_ERROR_STATUS);
+        expect(res.statusCode).toBe(Errors.FORBIDDEN_ERROR_STATUS);
         expect(res.body).toHaveProperty('valid');
         expect(res.body).toHaveProperty('error');
         expect(res.body.valid).toBe(false);
