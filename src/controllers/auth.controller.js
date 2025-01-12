@@ -24,6 +24,7 @@ const { SUCCESSFUL_USER_REGISTRATION, SUCCESSFUL_CREATION_STATUS, SUCCESSFUL_STA
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const { getToken, getDecodedValue } = require('../utils/Verifier');
 const InternalError = require('../errors/InternalError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 class Validator {
     isUsernameValid = (username) => {
@@ -190,7 +191,7 @@ const verify = async (req, res) => {
                 valid : true
             })
         } else {
-            throw new UnauthorizedError(USER_NOT_FOUND);
+            throw new ForbiddenError(USER_NOT_FOUND);
         }
     } catch (err) {
         if (err instanceof jwt.JsonWebTokenError) {
