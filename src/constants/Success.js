@@ -1,4 +1,5 @@
 const SUCCESSFUL_USER_REGISTRATION = 'User registered successfully';
+const SUCCESSFUL_USER_DELETION = 'User account deleted successfully';
 const SUCCESSFUL_LOGOUT = 'User logged out';
 const SUCCESSFUL_CREATION_STATUS = 201;
 const SUCCESSFUL_STATUS = 200;
@@ -7,5 +8,6 @@ module.exports = {
     SUCCESSFUL_USER_REGISTRATION,
     SUCCESSFUL_CREATION_STATUS,
     SUCCESSFUL_STATUS,
-    SUCCESSFUL_LOGOUT
+    SUCCESSFUL_LOGOUT,
+    SUCCESSFUL_USER_DELETION
 }
